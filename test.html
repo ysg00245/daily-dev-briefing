@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘 브리핑 · 미리보기 (실제 DB 관심사 반영)</title>
+<style>
+  :root{--bg:#f4f6fb;--card:#fff;--text:#1e293b;--muted:#64748b;--line:#e2e8f0;
+    --line2:#eef2f7;--brand:#4f46e5;--brand-soft:#eef2ff;
+    --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.05);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:600px;margin:0 auto;padding:18px 16px 48px}
+  header{padding:6px 4px 16px}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--brand)}
+  h1{font-size:23px;margin:5px 0 6px;letter-spacing:-.4px}
+  .date{font-size:13px;color:var(--muted)}
+  .summary{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--brand);
+    border-radius:14px;padding:14px 16px;margin:16px 0 18px;font-size:14.5px;box-shadow:var(--shadow)}
+  .summary b{color:var(--brand)}
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;margin:0 -2px;position:sticky;top:0;
+    background:var(--bg);z-index:5;-ms-overflow-style:none;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:13px;
+    font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.15s;
+    display:flex;align-items:center;gap:6px}
+  .tab .count{font-size:11px;background:var(--line2);color:var(--muted);border-radius:999px;padding:1px 7px}
+  .tab[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:var(--shadow)}
+  .tab[aria-selected="true"] .count{background:rgba(255,255,255,.25);color:#fff}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;
+    margin-bottom:12px;box-shadow:var(--shadow)}
+  .item .top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .num{width:22px;height:22px;border-radius:7px;background:var(--brand-soft);color:var(--brand);font-size:12px;
+    font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .pill{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px}
+  .item h2{font-size:16px;margin:2px 0 7px;letter-spacing:-.2px}
+  .item p{font-size:14px;color:#475569}
+  .why{margin-top:10px;padding:9px 11px;background:#f8fafc;border:1px solid var(--line2);border-radius:10px;
+    font-size:12.5px;color:var(--muted)}
+  .why b{color:var(--brand)}
+  .src{display:inline-block;margin-top:9px;font-size:12px;color:var(--brand);text-decoration:none;font-weight:600}
+  .closer{margin-top:18px;padding:15px 16px;background:linear-gradient(135deg,#eef2ff,#f5f3ff);
+    border:1px solid var(--line);border-radius:14px;font-size:14px;text-align:center}
+  .closer b{color:var(--brand)}
+  footer{margin-top:22px;text-align:center;font-size:11px;color:#94a3b8}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">오늘 브리핑</div>
+      <h1>한눈에 보는 맞춤 브리핑</h1>
+      <div class="date">미리보기 (실제 DB 관심사 반영) · 관심사 13개 · 대시보드 연동</div>
+    </header>
+
+    <div class="summary"><b>오늘의 핵심 —</b> 아래 탭·색상은 jarvis-board 대시보드에 저장된 실제 관심사에서 읽어온 것입니다.</div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-cat="all">전체 <span class="count">13</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c0">국제 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c1">주식 정보 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c2">IT·과학 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c3">반려동물/동물 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c4">세계 경제 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c5">IT 정보 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c6">경제 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c7">음악 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c8">Creator Watch <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c9">자동차/교통 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c10">정치 <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c11">AI &amp; Tech <span class="count">1</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="c12">영화/애니메이션 <span class="count">1</span></button>
+    </div>
+
+    <div id="list">
+      <article class="item" data-cat="c0">
+        <div class="top"><span class="num">1</span><span class="pill" style="background:#4f46e522;color:#4f46e5">국제</span></div>
+        <h2>[미리보기] 국제 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c1">
+        <div class="top"><span class="num">2</span><span class="pill" style="background:#05966922;color:#059669">주식 정보</span></div>
+        <h2>[미리보기] 주식 정보 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c2">
+        <div class="top"><span class="num">3</span><span class="pill" style="background:#7c3aed22;color:#7c3aed">IT·과학</span></div>
+        <h2>[미리보기] IT·과학 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c3">
+        <div class="top"><span class="num">4</span><span class="pill" style="background:#d9770622;color:#d97706">반려동물/동물</span></div>
+        <h2>[미리보기] 반려동물/동물 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c4">
+        <div class="top"><span class="num">5</span><span class="pill" style="background:#d9770622;color:#d97706">세계 경제</span></div>
+        <h2>[미리보기] 세계 경제 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c5">
+        <div class="top"><span class="num">6</span><span class="pill" style="background:#0284c722;color:#0284c7">IT 정보</span></div>
+        <h2>[미리보기] IT 정보 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c6">
+        <div class="top"><span class="num">7</span><span class="pill" style="background:#d9770622;color:#d97706">경제</span></div>
+        <h2>[미리보기] 경제 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c7">
+        <div class="top"><span class="num">8</span><span class="pill" style="background:#db277722;color:#db2777">음악</span></div>
+        <h2>[미리보기] 음악 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c8">
+        <div class="top"><span class="num">9</span><span class="pill" style="background:#0284c722;color:#0284c7">Creator Watch</span></div>
+        <h2>[미리보기] Creator Watch 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c9">
+        <div class="top"><span class="num">10</span><span class="pill" style="background:#e11d4822;color:#e11d48">자동차/교통</span></div>
+        <h2>[미리보기] 자동차/교통 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c10">
+        <div class="top"><span class="num">11</span><span class="pill" style="background:#e11d4822;color:#e11d48">정치</span></div>
+        <h2>[미리보기] 정치 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c11">
+        <div class="top"><span class="num">12</span><span class="pill" style="background:#05966922;color:#059669">AI &amp; Tech</span></div>
+        <h2>[미리보기] AI &amp; Tech 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+      <article class="item" data-cat="c12">
+        <div class="top"><span class="num">13</span><span class="pill" style="background:#7c3aed22;color:#7c3aed">영화/애니메이션</span></div>
+        <h2>[미리보기] 영화/애니메이션 분야 최신 소식 자리</h2>
+        <p>실제 아침 실행 때는 이 자리에 웹 검색으로 모은 오늘의 소식 요약이 들어갑니다.</p>
+        <div class="why"><b>왜 유용한가</b> · 관심사 우선순위/색상은 대시보드 설정에서 그대로 가져옵니다.</div>
+        <a class="src" href="https://example.com" target="_blank" rel="noopener">출처: example.com →</a>
+      </article>
+    </div>
+
+    <div class="closer"><b>오늘 눈여겨볼 것</b><br>관심사를 대시보드에서 바꾸면 다음 날 브리핑 탭도 자동으로 바뀝니다.</div>
+    <footer>매일 오전 8시 · 백사장님을 위한 자동 브리핑</footer>
+  </div>
+<script>
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var items=[].slice.call(document.querySelectorAll('#list .item'));
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){x.setAttribute('aria-selected', x===t);});
+      var cat=t.dataset.cat;
+      items.forEach(function(it){
+        it.classList.toggle('hidden', cat!=='all' && it.dataset.cat!==cat);
+      });
+    });
+  });
+</script>
+</body>
+</html>
