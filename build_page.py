@@ -178,6 +178,7 @@ SCRIPT = r"""
     renderDetail(q('d-text'),it.detail);
     var w=q('d-why');if(it.why){w.style.display='block';q('d-whytext').textContent=it.why;}else{w.style.display='none';}
     var s=q('d-src');if(it.source_url){s.style.display='inline-flex';s.href=it.source_url;}else{s.style.display='none';}
+    var sh=modal.querySelector('.sheet');if(sh){sh.scrollTop=0;}
     modal.classList.add('open');document.body.style.overflow='hidden';
   }
   window.closeDetail=function(){modal.classList.remove('open');document.body.style.overflow='';};
