@@ -1,0 +1,75 @@
+name: daily-briefing
+
+# 서버(GitHub Actions)에서 매일 KST 08시/17시에 자동 실행.
+# cron은 UTC 기준이다:
+#   UTC 23:00 = KST 08:00,  UTC 08:00 = KST 17:00
+# (KST = UTC+9. UTC 23시 + 9 = 다음날 08시)
+on:
+  schedule:
+    - cron: "0 8,23 * * *"   # UTC 08:00·23:00  =  KST 17:00·(익일)08:00
+  workflow_dispatch: {}        # 수동 실행(Actions 탭 → Run workflow)
+
+permissions:
+  contents: write              # GitHub Pages(같은 repo)로 발행하기 위해
+
+concurrency:
+  group: daily-briefing
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Write kakao_config.json (시크릿에서 구성)
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          DB_USER_ID: ${{ secrets.DB_USER_ID }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os
+          cfg = {
+              # DB 사용자 및 카카오 자격증명은 시크릿에서
+              "db_user_id": os.environ["DB_USER_ID"],
+              "kakao_rest_api_key": os.environ["KAKAO_REST_API_KEY"],
+              "kakao_client_secret": os.environ["KAKAO_CLIENT_SECRET"],
+              "kakao_refresh_token": os.environ["KAKAO_REFRESH_TOKEN"],
+              # 발행 대상 repo는 이 워크플로가 도는 repo 자신(github.token으로 쓰기)
+              "github_token": os.environ["GH_TOKEN"],
+              "github_owner": "ysg00245",
+              "github_repo": "daily-dev-briefing",
+              "github_branch": "main",
+              "public_base_url": "https://ysg00245.github.io/daily-dev-briefing",
+              # DATABASE_URL/GEMINI_API_KEY는 env로 전달 → env_local_path 파일은 두지 않는다
+              "env_local_path": "__none__/.env.local",
+              "exclude_categories": ["반려동물/동물", "음악", "영화/애니메이션"],
+          }
+          with open("kakao_config.json", "w", encoding="utf-8") as f:
+              json.dump(cfg, f, ensure_ascii=False, indent=2)
+          print("kakao_config.json written")
+          PY
+
+      - name: Run briefing pipeline
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python ci_run.py
+
+# 주의(카카오 refresh_token 로테이션):
+#   send_kakao.py는 토큰 갱신 시 새 refresh_token을 kakao_config.json 파일에만 저장한다.
+#   CI에서는 이 파일이 매 실행마다 시크릿으로 새로 생성되고 잡 종료 후 사라지므로,
+#   로테이션된 refresh_token은 영속되지 않는다. 카카오 refresh_token 유효기간(약 2개월)이
+#   지나기 전에 KAKAO_REFRESH_TOKEN 시크릿을 수동으로 갱신해야 한다(SECRETS.md 참고).
