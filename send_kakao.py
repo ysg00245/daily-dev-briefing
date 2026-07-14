@@ -64,18 +64,21 @@ def send_briefing(cfg_path, title, description, url):
 
     access_token = refresh_access_token(cfg, cfg_path)
 
+    # 카카오 text 템플릿은 text 최대 200자. 본문에 URL을 그대로 넣어 자동 링크되게 한다.
+    # (feed 템플릿의 버튼/링크는 도메인 화이트리스트 이슈로 표시가 누락되는 경우가 있어 회피)
+    reserve = len(url) + 4
+    desc = (description or "").strip()
+    head = (title or "").strip()
+    room = 200 - reserve - len(head) - 2
+    if room < 0:
+        room = 0
+    if len(desc) > room:
+        desc = desc[:max(0, room - 1)].rstrip() + "\u2026"
+    text = head + ("\n\n" + desc if desc else "") + "\n" + url
+    text = text[:200]
+
     link = {"web_url": url, "mobile_web_url": url}
-    template = {
-        "object_type": "feed",
-        "content": {
-            "title": title,
-            "description": description[:190],  # feed description 길이 여유 있게 컷
-            "link": link,
-        },
-        "buttons": [
-            {"title": "자세히 보기", "link": link},
-        ],
-    }
+    template = {"object_type": "text", "text": text, "link": link}
     status, body = _post(
         SEND_URL,
         {"template_object": json.dumps(template, ensure_ascii=False)},
